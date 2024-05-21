@@ -1,5 +1,6 @@
 package com.astieoce.divinewhisper;
 
+import com.astieoce.divinewhisper.item.ModItemGroups;
 import com.astieoce.divinewhisper.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 
@@ -12,8 +13,9 @@ public class DivineWhisper implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Hello Fabric world! testing!");
+		LOGGER.info("[DivineWhisper] Initializing.");
 
+		ModItemGroups.registerItemGroups();
 		ModItems.registerModItems();
 	}
 }

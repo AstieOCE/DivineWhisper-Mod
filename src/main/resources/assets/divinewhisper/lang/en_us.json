@@ -1,3 +1,6 @@
 {
-  "item.divinewhisper.memory_essence": "Essence of Memory"
+  "item.divinewhisper.memory_essence": "Essence of Memory",
+
+  "itemgroup.divinewhisper": "Divine Whispers",
+  "itemgroup.dw_essence": "DW Essences"
 }

@@ -37,7 +37,8 @@ public class ModItems {
 
     // Register mod items and item group events
     public static void registerModItems() {
-        DivineWhisper.LOGGER.info("Registering Mod Items for: " + DivineWhisper.MOD_ID);
+        int itemCount = MOD_ITEMS.size();
+        DivineWhisper.LOGGER.info("Registering " + itemCount + " Mod Items for: " + DivineWhisper.MOD_ID);
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(ModItems::addItemsToIngredientTabItemGroup);
     }
 }
