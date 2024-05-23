@@ -15,10 +15,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CameraSaving {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -56,33 +58,31 @@ public class CameraSaving {
     }
 
     public static CompletableFuture<Suggestions> suggestRecordings(SuggestionsBuilder builder) {
-        try {
-            if (RECORDINGS_DIR.exists()) {
-                Files.list(RECORDINGS_DIR.toPath())
-                        .filter(Files::isRegularFile)
+        if (RECORDINGS_DIR.exists()) {
+            try (Stream<Path> paths = Files.list(RECORDINGS_DIR.toPath())) {
+                paths.filter(Files::isRegularFile)
                         .forEach(path -> builder.suggest(path.getFileName().toString()));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return builder.buildFuture();
     }
 
     public static int listRecordings(FabricClientCommandSource source) {
-        try {
-            if (RECORDINGS_DIR.exists()) {
-                String recordings = Files.list(RECORDINGS_DIR.toPath())
-                        .filter(Files::isRegularFile)
+        if (RECORDINGS_DIR.exists()) {
+            try (Stream<Path> paths = Files.list(RECORDINGS_DIR.toPath())) {
+                String recordings = paths.filter(Files::isRegularFile)
                         .map(path -> path.getFileName().toString())
                         .collect(Collectors.joining(", "));
 
                 source.getPlayer().sendMessage(Text.literal("Recordings: " + recordings), false);
-            } else {
-                source.getPlayer().sendMessage(Text.literal("No recordings found"), false);
+            } catch (IOException e) {
+                source.getPlayer().sendMessage(Text.literal("Error listing recordings: " + e.getMessage()), false);
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            source.getPlayer().sendMessage(Text.literal("Error listing recordings: " + e.getMessage()), false);
-            e.printStackTrace();
+        } else {
+            source.getPlayer().sendMessage(Text.literal("No recordings found"), false);
         }
         return 1;
     }
