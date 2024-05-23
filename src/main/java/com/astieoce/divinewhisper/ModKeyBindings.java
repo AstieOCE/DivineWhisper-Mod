@@ -1,6 +1,6 @@
 package com.astieoce.divinewhisper;
 
-import com.astieoce.divinewhisper.command.CameraCommand;
+import com.astieoce.divinewhisper.camera.*;
 import com.astieoce.divinewhisper.screen.DeityScreen;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -12,6 +12,8 @@ import org.lwjgl.glfw.GLFW;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import static com.astieoce.divinewhisper.camera.CameraControl.registerClientTick;
 
 public class ModKeyBindings {
 
@@ -48,7 +50,7 @@ public class ModKeyBindings {
         });
 
         // Register the client tick for playback controls
-        CameraCommand.registerClientTick();
+        CameraControl.registerClientTick();
     }
 
     private static void openDeityUI() {
@@ -59,14 +61,14 @@ public class ModKeyBindings {
 
     private static void toggleRecording() {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (CameraCommand.isRecording()) {
-            CameraCommand.stopRecording();
+        if (CameraControl.isRecording()) {
+            CameraControl.stopRecording();
             String filename = "recording_" + new SimpleDateFormat("HHmm_ddMMyyyy").format(new Date()) + ".json";
-            CameraCommand.saveRecording(filename);
+            CameraSaving.saveRecording(filename);
             client.player.sendMessage(Text.literal("Stopped recording and saved to " + filename), false);
             DivineWhisper.LOGGER.info("Recording saved to " + filename);
         } else {
-            CameraCommand.startRecording();
+            CameraControl.startRecording();
             client.player.sendMessage(Text.literal("Started recording"), false);
             DivineWhisper.LOGGER.info("Started recording");
         }

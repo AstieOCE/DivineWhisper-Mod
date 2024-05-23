@@ -16,33 +16,6 @@ public class CameraPath {
         return frames;
     }
 
-    public static class CameraFrame {
-        private final Vec3d position;
-        private final float yaw;
-        private final float pitch;
-        private final long timestamp;
-
-        public CameraFrame(Vec3d position, float yaw, float pitch, long timestamp) {
-            this.position = position;
-            this.yaw = yaw;
-            this.pitch = pitch;
-            this.timestamp = timestamp;
-        }
-
-        public Vec3d getPosition() {
-            return position;
-        }
-
-        public float getYaw() {
-            return yaw;
-        }
-
-        public float getPitch() {
-            return pitch;
-        }
-
-        public long getTimestamp() {
-            return timestamp;
-        }
+    public record CameraFrame(Vec3d position, float yaw, float pitch, long timestamp) {
     }
 }
