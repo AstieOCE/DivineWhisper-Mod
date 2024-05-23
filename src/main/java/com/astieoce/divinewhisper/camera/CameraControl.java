@@ -1,9 +1,10 @@
 package com.astieoce.divinewhisper.camera;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.text.Text;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
@@ -12,12 +13,16 @@ import java.util.Map;
 public class CameraControl {
     public static final Map<String, CameraPath> cameraPaths = new HashMap<>();
     private static boolean recording = false;
+    private static RecordingSettings currentSettings;
     private static long lastRecordedTime = 0;
 
-    public static void startRecording() {
+    public static void startRecording(RecordingSettings settings) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player != null) {
-            cameraPaths.put(client.player.getName().getString(), new CameraPath());
+            CameraPath path = new CameraPath();
+            path.setSettings(settings.getAllSettings());
+            cameraPaths.put(client.player.getName().getString(), path);
+            currentSettings = settings;
             recording = true;
         }
     }

@@ -12,6 +12,8 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.arg
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
 public class CameraCommand {
+    private static final RecordingSettings settings = new RecordingSettings();
+
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
         dispatcher.register(literal("camera")
                 .then(literal("record")
@@ -26,11 +28,51 @@ public class CameraCommand {
                                     return 1;
                                 })))
                 .then(literal("list")
-                        .executes(context -> CameraSaving.listRecordings(context.getSource()))));
+                        .executes(context -> CameraSaving.listRecordings(context.getSource())))
+                .then(literal("settings")
+                        .then(argument("setting", StringArgumentType.string())
+                                .then(argument("value", StringArgumentType.string())
+                                        .executes(context -> {
+                                            String setting = StringArgumentType.getString(context, "setting");
+                                            String value = StringArgumentType.getString(context, "value");
+                                            setSetting(setting, value);
+                                            if (client.player != null) {
+                                                client.player.sendMessage(Text.literal("Setting " + setting + " updated to " + value));
+                                            }
+                                            return 1;
+                                        }))))
+        );
+    }
+
+    private static void setSetting(String setting, String value) {
+        switch (setting) {
+            case "recordInteracts":
+            case "enableGravity":
+            case "recordTime":
+            case "relativePosition":
+            case "recordInventory":
+            case "recordGamemode":
+            case "recordState":
+            case "recordSelfSkin":
+            case "recordEntities":
+                settings.setSetting(setting, Boolean.parseBoolean(value));
+                break;
+            case "playbackSpeed":
+                settings.setSetting(setting, Float.parseFloat(value));
+                break;
+            case "gamemode":
+                settings.setSetting(setting, value);
+                break;
+            default:
+                if (client.player != null) {
+                    client.player.sendMessage(Text.literal("Unknown setting: " + setting));
+                }
+                break;
+        }
     }
 
     private static int startRecordingCommand() {
-        CameraControl.startRecording();
+        CameraControl.startRecording(settings);
         if (client.player != null) {
             client.player.sendMessage(Text.literal("Started recording"));
         }
@@ -40,7 +82,7 @@ public class CameraCommand {
     private static int stopRecordingCommand() {
         CameraControl.stopRecording();
         String filename = "recording_" + CameraSaving.DATE_FORMAT.format(new Date()) + ".json";
-        CameraSaving.saveRecording(filename);
+        CameraSaving.saveRecording(filename, settings.getAllSettings());
         if (client.player != null) {
             client.player.sendMessage(Text.literal("Stopped recording and saved to " + filename));
         }

@@ -8,7 +8,7 @@ public class RecordingSettings {
 
     public RecordingSettings() {
         // Default GENERAL Recording settings
-        settings.put("playbackSpeed", 1);
+        settings.put("playbackSpeed", 1.0f);
         settings.put("relativePosition", false);
         settings.put("enableGravity", false);
         settings.put("gamemode", "spectator");
@@ -33,6 +33,6 @@ public class RecordingSettings {
     }
 
     public Map<String, Object> getAllSettings() {
-        return settings;
+        return new HashMap<>(settings);
     }
 }

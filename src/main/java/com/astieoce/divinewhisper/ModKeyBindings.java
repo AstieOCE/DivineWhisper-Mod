@@ -13,12 +13,10 @@ import org.lwjgl.glfw.GLFW;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.astieoce.divinewhisper.camera.CameraControl.registerClientTick;
-
 public class ModKeyBindings {
-
     public static KeyBinding deityKeyBinding;
     public static KeyBinding recordKeyBinding;
+    private static final RecordingSettings settings = new RecordingSettings(); //Default ?
 
     public static void registerKeyBindings() {
         // Register the deity UI keybinding
@@ -64,12 +62,16 @@ public class ModKeyBindings {
         if (CameraControl.isRecording()) {
             CameraControl.stopRecording();
             String filename = "recording_" + new SimpleDateFormat("HHmm_ddMMyyyy").format(new Date()) + ".json";
-            CameraSaving.saveRecording(filename);
-            client.player.sendMessage(Text.literal("Stopped recording and saved to " + filename), false);
+            CameraSaving.saveRecording(filename, settings.getAllSettings());
+            if (client.player != null) {
+                client.player.sendMessage(Text.literal("Stopped recording and saved to " + filename), false);
+            }
             DivineWhisper.LOGGER.info("Recording saved to " + filename);
         } else {
-            CameraControl.startRecording();
-            client.player.sendMessage(Text.literal("Started recording"), false);
+            CameraControl.startRecording(settings);
+            if (client.player != null) {
+                client.player.sendMessage(Text.literal("Started recording"), false);
+            }
             DivineWhisper.LOGGER.info("Started recording");
         }
     }

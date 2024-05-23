@@ -32,15 +32,15 @@ public class CameraPlayback {
                     CameraPath.CameraFrame endFrame = path.getFrames().get(i + 1);
 
                     // Calculate the time difference between frames
-                    long timeDifference = endFrame.timestamp() - startFrame.timestamp();
+                    long timeDifference = endFrame.getTimestamp() - startFrame.getTimestamp();
 
                     // Interpolate between frames
                     for (int j = 0; j < 20 && playingBack; j++) { // 20 steps for smooth transition
                         float t = j / 20.0f;
 
-                        Vec3d interpolatedPos = startFrame.position().lerp(endFrame.position(), t);
-                        float interpolatedYaw = lerpAngle(startFrame.yaw(), endFrame.yaw(), t);
-                        float interpolatedPitch = lerpAngle(startFrame.pitch(), endFrame.pitch(), t);
+                        Vec3d interpolatedPos = startFrame.getPosition().lerp(endFrame.getPosition(), t);
+                        float interpolatedYaw = lerpAngle(startFrame.getYaw(), endFrame.getYaw(), t);
+                        float interpolatedPitch = lerpAngle(startFrame.getPitch(), endFrame.getPitch(), t);
 
                         try {
                             // Update the player's position and orientation
