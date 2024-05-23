@@ -2,5 +2,11 @@
   "item.divinewhisper.memory_essence": "Essence of Memory",
 
   "itemgroup.divinewhisper": "Divine Whispers",
-  "itemgroup.dw_essence": "DW Essences"
+  "itemgroup.dw_essence": "DW Essences",
+
+  "key.divinewhisper.deity_ui": "Open Deity UI",
+  "category.divinewhisper.keybindings": "Divine Whisper Keybindings",
+  "screen.divinewhisper.lore": "View Lore",
+  "screen.divinewhisper.lore.tooltip": "View the lore of the selected deity",
+  "screen.divinewhisper.deity_ui": "Deity UI"
 }
