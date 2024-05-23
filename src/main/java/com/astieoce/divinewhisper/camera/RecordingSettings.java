@@ -7,13 +7,13 @@ public class RecordingSettings {
     private final Map<String, Object> settings = new HashMap<>();
 
     public RecordingSettings() {
-        // Default settings
+        // Default GENERAL Recording settings
         settings.put("playbackSpeed", 1);
         settings.put("relativePosition", false);
         settings.put("enableGravity", false);
         settings.put("gamemode", "spectator");
 
-        // Default Recording Settings
+        // Default EXTRA Recording Settings
         settings.put("recordInteracts", true);
         settings.put("recordTime", false);
         settings.put("recordInventory", false);
