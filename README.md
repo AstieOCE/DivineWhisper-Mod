@@ -1,4 +1,8 @@
 <h1 align="center">Divine Whisper</h1>
+
+> [!CAUTION]
+> This minecraft mod is in ALPHA. Things WILL break. Do NOT build it.
+
 <h4 align="center">Description</h4>
 <p><i>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi iaculis nulla in arcu pharetra facilisis. Maecenas egestas tempus sapien, sed faucibus lacus. Aenean lobortis fringilla erat tincidunt accumsan. Ut pulvinar, nisi ac porttitor facilisis, lorem nunc bibendum nisl, at laoreet ligula arcu non augue. Nulla mattis elit ac nulla tempor sagittis. Donec maximus mi sit amet nulla pellentesque, sed pellentesque odio pharetra. Vivamus commodo scelerisque orci at fringilla. Curabitur mauris nulla, interdum ut iaculis eget, lobortis at magna. Etiam id ex in ligula posuere consectetur in eget magna. Praesent vestibulum nunc neque, nec bibendum odio vulputate sit amet. In at bibendum dui.</i></p>
 
