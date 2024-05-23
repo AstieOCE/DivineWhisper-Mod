@@ -55,7 +55,8 @@ public class CameraPlayback {
 
                             // Sleep for the appropriate duration (interpolated)
                             Thread.sleep(timeDifference / 20); // Divided by 20 steps
-                            // Thread.sleep is a pretty shit way to do this. But its the best I can think currently.
+                            // Thread.sleep is a royally shit way to do this. I'll have to do client tick shit at some
+                            // stage.
                         } catch (InterruptedException e) {
                             DivineWhisper.LOGGER.error("Thread was interrupted during playback: ", e);
                         }
