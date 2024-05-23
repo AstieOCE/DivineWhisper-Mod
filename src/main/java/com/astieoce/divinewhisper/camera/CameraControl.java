@@ -14,6 +14,8 @@ public class CameraControl {
     public static final Map<String, CameraPath> cameraPaths = new HashMap<>();
     private static boolean recording = false;
     private static RecordingSettings currentSettings;
+    // I forget why I put that there. Fuck. I think I was meant to have the settings here. shit. FUCK.
+
     private static long lastRecordedTime = 0;
 
     public static void startRecording(RecordingSettings settings) {
@@ -62,6 +64,9 @@ public class CameraControl {
                     client.options.rightKey.setPressed(false);
                     client.options.jumpKey.setPressed(false);
                     client.options.sneakKey.setPressed(false);
+                    // currently, the sneak key isn't being stopped.
+                    // Nor left and right clicking. NOR middle mouse scrollwheeling.
+                    // It might be better to just disabled ALL keys except for the escape key.
                 }
 
                 // Check if escape key is pressed to terminate playback

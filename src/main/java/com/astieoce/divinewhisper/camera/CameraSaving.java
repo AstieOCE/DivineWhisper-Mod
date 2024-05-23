@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 public class CameraSaving {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File RECORDINGS_DIR = new File(MinecraftClient.getInstance().runDirectory, "recordings");
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy_HHmm");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HHmm_ddMMyyyy");
 
     public static void saveRecording(String filename, Map<String, Object> settings) {
         MinecraftClient client = MinecraftClient.getInstance();
@@ -57,13 +57,12 @@ public class CameraSaving {
         }
     }
 
-    public static CompletableFuture<Suggestions> suggestRecordings(SuggestionsBuilder builder) {
-        String input = builder.getRemainingLowerCase();
-
+    public static CompletableFuture<Suggestions> suggestRecordings(SuggestionsBuilder builder, String input) {
         if (RECORDINGS_DIR.exists()) {
             try (Stream<Path> paths = Files.list(RECORDINGS_DIR.toPath())) {
                 List<String> suggestions = paths.filter(Files::isRegularFile)
                         .map(path -> path.getFileName().toString())
+                        .filter(name -> name.toLowerCase().startsWith(input))
                         .collect(Collectors.toList());
 
                 suggestions.forEach(builder::suggest);
@@ -71,7 +70,6 @@ public class CameraSaving {
                 e.printStackTrace();
             }
         }
-
         return builder.buildFuture();
     }
 

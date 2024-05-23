@@ -26,7 +26,9 @@ public class CameraCommand {
     );
     private static final List<String> gamemodes = Arrays.asList("Survival", "Creative", "Spectator");
 
-    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
+    public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher,
+                                CommandRegistryAccess registryAccess) {
+        // registryAccess never ends up being used. Don't need it.
         dispatcher.register(literal("camera")
                 .then(literal("record")
                         .executes(context -> startRecordingCommand()))
@@ -34,7 +36,7 @@ public class CameraCommand {
                         .executes(context -> stopRecordingCommand()))
                 .then(literal("playback")
                         .then(argument("filename", StringArgumentType.string())
-                                .suggests((context, builder) -> CameraSaving.suggestRecordings(builder))
+                                .suggests(CameraCommand::suggestRecordings)
                                 .executes(context -> {
                                     CameraPlayback.playback(context.getSource(), StringArgumentType.getString(context, "filename"));
                                     return 1;
@@ -115,6 +117,11 @@ public class CameraCommand {
         return builder.buildFuture();
     }
 
+    private static CompletableFuture<Suggestions> suggestRecordings(CommandContext<FabricClientCommandSource> context, SuggestionsBuilder builder) {
+        String input = builder.getRemaining().toLowerCase();
+        return CameraSaving.suggestRecordings(builder, input);
+    }
+
     private static int startRecordingCommand() {
         CameraControl.startRecording(settings);
         if (client.player != null) {
@@ -128,7 +135,7 @@ public class CameraCommand {
         String filename = "recording_" + CameraSaving.DATE_FORMAT.format(new Date()) + ".json";
         CameraSaving.saveRecording(filename, settings.getAllSettings());
         if (client.player != null) {
-            client.player.sendMessage(Text.literal("Stopped recording and saved to " + filename), false);
+            client.player.sendMessage(Text.literal("Stopped recording and saved to " + filename), true);
         }
         return 1;
     }

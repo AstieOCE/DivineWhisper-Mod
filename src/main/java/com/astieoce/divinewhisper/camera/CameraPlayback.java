@@ -1,5 +1,6 @@
 package com.astieoce.divinewhisper.camera;
 
+import com.astieoce.divinewhisper.DivineWhisper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.Vec3d;
@@ -54,8 +55,9 @@ public class CameraPlayback {
 
                             // Sleep for the appropriate duration (interpolated)
                             Thread.sleep(timeDifference / 20); // Divided by 20 steps
+                            // Thread.sleep is a pretty shit way to do this. But its the best I can think currently.
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            DivineWhisper.LOGGER.error("Thread was interrupted during playback: ", e);
                         }
                     }
                 }
@@ -71,6 +73,7 @@ public class CameraPlayback {
         MinecraftClient.getInstance().execute(() -> {
             if (player != null) {
                 player.setNoGravity(false);
+                //TODO: Set this to be based upon the settings. :)
             }
         });
     }
