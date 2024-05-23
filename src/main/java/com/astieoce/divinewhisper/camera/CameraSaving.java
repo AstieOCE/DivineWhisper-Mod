@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 public class CameraSaving {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final File RECORDINGS_DIR = new File(MinecraftClient.getInstance().runDirectory, "recordings");
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HHmm_ddMMyyyy");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("ddMMyyyy_HHmm");
 
     public static void saveRecording(String filename, Map<String, Object> settings) {
         MinecraftClient client = MinecraftClient.getInstance();
