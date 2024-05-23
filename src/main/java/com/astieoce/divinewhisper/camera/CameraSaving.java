@@ -17,10 +17,33 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+// TODO(Basic Settings): Enable the ability to add "Settings" the saved json files.
+// enableGravity: This prevents the player character from falling if they're in the air or jumping.
+// (DEFAULT: FALSE)
+// recordTime: This records the current world's TIME and will replicate it when playback occurs.
+// (DEFAULT: FALSE)
+// relativePosition: This makes XYZ positioning & direction the player is facing RELATIVE to CURRENT PLAYER position.
+// (DEFAULT: FALSE)
+
+// TODO(Extra Settings) - Extra settings that MUST return whatever was PREVIOUSLY there, BACK + remove anything extra.
+// playbackSpeed: Changing this value will change the playback recording's speed.
+// (DEFAULT: 1)
+// recordInventory: This records the player's CURRENT inventory & which slot they're on. Including if they use an item.
+// (DEFAULT: FALSE)
+// recordGamemode: This records PLAYER gamemode. I HIGHLY recommend against going into CREATIVE mode. (but allow it)
+// (DEFAULT: FALSE)
+// recordState: This will record PLAYER HEALTH, HUNGER and EFFECTS on PLAYER. WILL return to previous values.
+// (DEFAULT: FALSE)
+// recordEntities: This records entities within a 6 chunk radius of the player AND their own movements + yaw etc.
+// (DEFAULT: FALSE)
+
+// TODO(Error Checking): Ensure there is obsolete json file correction OR ignoring the errors and stating it.
 
 public class CameraSaving {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -58,14 +81,21 @@ public class CameraSaving {
     }
 
     public static CompletableFuture<Suggestions> suggestRecordings(SuggestionsBuilder builder) {
+        String input = builder.getRemainingLowerCase();
+
         if (RECORDINGS_DIR.exists()) {
             try (Stream<Path> paths = Files.list(RECORDINGS_DIR.toPath())) {
-                paths.filter(Files::isRegularFile)
-                        .forEach(path -> builder.suggest(path.getFileName().toString()));
+                List<String> suggestions = paths.filter(Files::isRegularFile)
+                        .map(path -> path.getFileName().toString())
+                        .sorted(Comparator.comparingInt(s -> getLevenshteinDistance(s.toLowerCase(), input)))
+                        .collect(Collectors.toList());
+
+                suggestions.forEach(builder::suggest);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
         return builder.buildFuture();
     }
 
@@ -85,5 +115,22 @@ public class CameraSaving {
             source.getPlayer().sendMessage(Text.literal("No recordings found"), false);
         }
         return 1;
+    }
+
+    private static int getLevenshteinDistance(String a, String b) {
+        int[][] costs = new int[a.length() + 1][b.length() + 1];
+        for (int i = 0; i <= a.length(); i++) {
+            for (int j = 0; j <= b.length(); j++) {
+                if (i == 0) {
+                    costs[i][j] = j;
+                } else if (j == 0) {
+                    costs[i][j] = i;
+                } else {
+                    int cost = a.charAt(i - 1) == b.charAt(j - 1) ? 0 : 1;
+                    costs[i][j] = Math.min(Math.min(costs[i - 1][j] + 1, costs[i][j - 1] + 1), costs[i - 1][j - 1] + cost);
+                }
+            }
+        }
+        return costs[a.length()][b.length()];
     }
 }
