@@ -28,7 +28,6 @@ public class CameraCommand {
 
     public static void register(CommandDispatcher<FabricClientCommandSource> dispatcher,
                                 CommandRegistryAccess registryAccess) {
-        // registryAccess never ends up being used. Don't need it.
         dispatcher.register(literal("camera")
                 .then(literal("record")
                         .executes(context -> startRecordingCommand()))

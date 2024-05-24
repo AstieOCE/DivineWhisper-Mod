@@ -1,5 +1,6 @@
 package com.astieoce.divinewhisper.camera;
 
+import com.astieoce.divinewhisper.DivineWhisper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -29,9 +30,8 @@ public class CameraSaving {
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("HHmm_ddMMyyyy");
 
     public static void saveRecording(String filename, Map<String, Object> settings) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.player != null) {
-            CameraPath path = CameraControl.cameraPaths.get(client.player.getName().getString());
+        if (DivineWhisper.client.player != null) {
+            CameraPath path = CameraControl.cameraPaths.get(DivineWhisper.client.player.getName().getString());
             if (path != null) {
                 path.setSettings(settings);
                 if (!RECORDINGS_DIR.exists()) {
@@ -40,7 +40,7 @@ public class CameraSaving {
                 try (FileWriter writer = new FileWriter(new File(RECORDINGS_DIR, filename))) {
                     GSON.toJson(path, writer);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    DivineWhisper.LOGGER.error("Failed to save recording", e);
                 }
             }
         }
@@ -53,7 +53,7 @@ public class CameraSaving {
             CameraPath path = GSON.fromJson(reader, type);
             CameraControl.cameraPaths.put(playerName, path);
         } catch (IOException e) {
-            e.printStackTrace();
+            DivineWhisper.LOGGER.error("Failed to load recording", e);
         }
     }
 
@@ -67,7 +67,7 @@ public class CameraSaving {
 
                 suggestions.forEach(builder::suggest);
             } catch (IOException e) {
-                e.printStackTrace();
+                DivineWhisper.LOGGER.error("Failed to suggest recordings", e);
             }
         }
         return builder.buildFuture();
@@ -83,7 +83,7 @@ public class CameraSaving {
                 source.getPlayer().sendMessage(Text.literal("Recordings: " + recordings), false);
             } catch (IOException e) {
                 source.getPlayer().sendMessage(Text.literal("Error listing recordings: " + e.getMessage()), false);
-                e.printStackTrace();
+                DivineWhisper.LOGGER.error("Error listing recordings", e);
             }
         } else {
             source.getPlayer().sendMessage(Text.literal("No recordings found"), false);

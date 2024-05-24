@@ -46,9 +46,6 @@ public class ModKeyBindings {
                 toggleRecording();
             }
         });
-
-        // Register the client tick for playback controls
-        CameraControl.registerClientTick();
     }
 
     private static void openDeityUI() {

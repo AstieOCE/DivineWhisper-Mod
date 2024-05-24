@@ -2,11 +2,17 @@ package com.astieoce.divinewhisper.camera;
 
 import com.astieoce.divinewhisper.DivineWhisper;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Vec3d;
+
+import java.util.Map;
+
+import static com.astieoce.divinewhisper.DivineWhisper.client;
 
 public class CameraPlayback {
+    private static int speed = 5;
     private static boolean playingBack = false;
 
     public static boolean isPlayingBack() {
@@ -22,11 +28,18 @@ public class CameraPlayback {
 
             // Schedule playback with interpolation
             playingBack = true;
-            MinecraftClient.getInstance().execute(() -> {
-                if (MinecraftClient.getInstance().player != null) {
-                    MinecraftClient.getInstance().player.setNoGravity(true);
-                }
-            });
+
+            if (!(Boolean) path.getSettings().getOrDefault("relativePosition", false)) {
+                Vec3d startPos = path.getFrames().get(0).getPosition();
+                client.execute(() -> {
+                    if (client.player != null) {
+                        client.player.updatePosition(startPos.x, startPos.y, startPos.z);
+                        client.player.setYaw(path.getFrames().get(0).getYaw());
+                        client.player.setPitch(path.getFrames().get(0).getPitch());
+                    }
+                });
+            }
+
             new Thread(() -> {
                 for (int i = 0; i < path.getFrames().size() - 1 && playingBack; i++) {
                     CameraPath.CameraFrame startFrame = path.getFrames().get(i);
@@ -34,49 +47,74 @@ public class CameraPlayback {
 
                     // Calculate the time difference between frames
                     long timeDifference = endFrame.getTimestamp() - startFrame.getTimestamp();
+                    int steps = (int) (timeDifference / speed); // Assume 20 FPS, so 50 ms per step
 
-                    // Interpolate between frames
-                    for (int j = 0; j < 20 && playingBack; j++) { // 20 steps for smooth transition
-                        float t = j / 20.0f;
+                    for (int j = 0; j < steps && playingBack; j++) { // Steps for smooth transition
+                        float t = j / (float) steps;
 
                         Vec3d interpolatedPos = startFrame.getPosition().lerp(endFrame.getPosition(), t);
                         float interpolatedYaw = lerpAngle(startFrame.getYaw(), endFrame.getYaw(), t);
                         float interpolatedPitch = lerpAngle(startFrame.getPitch(), endFrame.getPitch(), t);
 
                         try {
-                            // Update the player's position and orientation
-                            MinecraftClient.getInstance().execute(() -> {
-                                if (MinecraftClient.getInstance().player != null) {
-                                    MinecraftClient.getInstance().player.updatePosition(interpolatedPos.x, interpolatedPos.y, interpolatedPos.z);
-                                    MinecraftClient.getInstance().player.setYaw(interpolatedYaw);
-                                    MinecraftClient.getInstance().player.setPitch(interpolatedPitch);
+                            // Update the player's orientation and key states
+                            client.execute(() -> {
+                                if (client.player != null) {
+                                    client.player.updatePosition(interpolatedPos.x, interpolatedPos.y, interpolatedPos.z);
+                                    client.player.setYaw(interpolatedYaw);
+                                    client.player.setPitch(interpolatedPitch);
+
+                                    // Apply key states
+                                    Map<String, Boolean> keyStates = startFrame.getKeyStates();
+                                    setKeyBindingState(client.options.forwardKey, keyStates.getOrDefault("forward", false));
+                                    setKeyBindingState(client.options.backKey, keyStates.getOrDefault("back", false));
+                                    setKeyBindingState(client.options.leftKey, keyStates.getOrDefault("left", false));
+                                    setKeyBindingState(client.options.rightKey, keyStates.getOrDefault("right", false));
+                                    setKeyBindingState(client.options.jumpKey, keyStates.getOrDefault("jump", false));
+                                    setKeyBindingState(client.options.sneakKey, keyStates.getOrDefault("sneak", false));
+
+                                    // Apply mouse clicks directly
+                                    ClientPlayerEntity player = client.player;
+                                    if (startFrame.isLeftClick()) {
+                                        if (client.interactionManager != null) {
+                                            client.interactionManager.attackEntity(player, player);
+                                        }
+                                    }
+                                    if (startFrame.isRightClick()) {
+                                        if (client.interactionManager != null) {
+                                            client.interactionManager.interactItem(player, player.getActiveHand());
+                                        }
+                                    }
                                 }
                             });
 
                             // Sleep for the appropriate duration (interpolated)
-                            Thread.sleep(timeDifference / 20); // Divided by 20 steps
-                            // Thread.sleep is a royally shit way to do this. I'll have to do client tick shit at some
-                            // stage.
+                            Thread.sleep(speed); // 5ms per step for smooth playback
                         } catch (InterruptedException e) {
-                            DivineWhisper.LOGGER.error("Thread was interrupted during playback: ", e);
+                            DivineWhisper.LOGGER.error("Playback interrupted", e);
                         }
                     }
                 }
-                stopPlayback(MinecraftClient.getInstance().player);
+                stopPlayback(client.player);
             }).start();
         } else {
             source.getPlayer().sendMessage(Text.literal("No recording found in " + filename), false);
         }
     }
 
-    public static void stopPlayback(net.minecraft.entity.player.PlayerEntity player) {
+    public static void stopPlayback(ClientPlayerEntity player) {
         playingBack = false;
-        MinecraftClient.getInstance().execute(() -> {
+        client.execute(() -> {
             if (player != null) {
                 player.setNoGravity(false);
-                //TODO: Set this to be based upon the settings. :)
             }
         });
+    }
+
+    private static void setKeyBindingState(KeyBinding keyBinding, boolean pressed) {
+        if (keyBinding.isPressed() != pressed) {
+            keyBinding.setPressed(pressed);
+        }
     }
 
     private static float lerpAngle(float start, float end, float t) {

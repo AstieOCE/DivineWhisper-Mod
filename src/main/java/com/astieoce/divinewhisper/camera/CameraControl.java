@@ -1,30 +1,22 @@
 package com.astieoce.divinewhisper.camera;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.text.Text;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.util.InputUtil;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.astieoce.divinewhisper.DivineWhisper.client;
+
 public class CameraControl {
     public static final Map<String, CameraPath> cameraPaths = new HashMap<>();
     private static boolean recording = false;
-    private static RecordingSettings currentSettings;
-    // I forget why I put that there. Fuck. I think I was meant to have the settings here. shit. FUCK.
-
     private static long lastRecordedTime = 0;
+    private static RecordingSettings settings;
 
     public static void startRecording(RecordingSettings settings) {
-        MinecraftClient client = MinecraftClient.getInstance();
+        CameraControl.settings = settings;
         if (client.player != null) {
-            CameraPath path = new CameraPath();
-            path.setSettings(settings.getAllSettings());
-            cameraPaths.put(client.player.getName().getString(), path);
-            currentSettings = settings;
+            cameraPaths.put(client.player.getName().getString(), new CameraPath());
             recording = true;
         }
     }
@@ -38,43 +30,29 @@ public class CameraControl {
     }
 
     public static void recordFrame() {
-        MinecraftClient client = MinecraftClient.getInstance();
         if (recording && client.player != null) {
             long currentTime = System.currentTimeMillis();
             if (currentTime - lastRecordedTime > 50) { // Record every 50ms (20 FPS)
                 Vec3d position = client.player.getPos();
                 float yaw = client.player.getYaw();
                 float pitch = client.player.getPitch();
-                cameraPaths.get(client.player.getName().getString()).addFrame(position, yaw, pitch, currentTime);
+
+                // Capture key states
+                Map<String, Boolean> keyStates = new HashMap<>();
+                keyStates.put("forward", client.options.forwardKey.isPressed());
+                keyStates.put("back", client.options.backKey.isPressed());
+                keyStates.put("left", client.options.leftKey.isPressed());
+                keyStates.put("right", client.options.rightKey.isPressed());
+                keyStates.put("jump", client.options.jumpKey.isPressed());
+                keyStates.put("sneak", client.options.sneakKey.isPressed());
+
+                // Capture mouse clicks
+                boolean leftClick = client.options.attackKey.isPressed();
+                boolean rightClick = client.options.useKey.isPressed();
+
+                cameraPaths.get(client.player.getName().getString()).addFrame(position, yaw, pitch, currentTime, keyStates, leftClick, rightClick);
                 lastRecordedTime = currentTime;
             }
         }
-    }
-
-    public static void registerClientTick() {
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (CameraPlayback.isPlayingBack() && client.player != null) {
-                // Disable movement controls
-                if (client.options.forwardKey.isPressed() || client.options.backKey.isPressed() ||
-                        client.options.leftKey.isPressed() || client.options.rightKey.isPressed() ||
-                        client.options.jumpKey.isPressed() || client.options.sneakKey.isPressed()) {
-                    client.options.forwardKey.setPressed(false);
-                    client.options.backKey.setPressed(false);
-                    client.options.leftKey.setPressed(false);
-                    client.options.rightKey.setPressed(false);
-                    client.options.jumpKey.setPressed(false);
-                    client.options.sneakKey.setPressed(false);
-                    // currently, the sneak key isn't being stopped.
-                    // Nor left and right clicking. NOR middle mouse scrollwheeling.
-                    // It might be better to just disabled ALL keys except for the escape key.
-                }
-
-                // Check if escape key is pressed to terminate playback
-                if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_ESCAPE)) {
-                    CameraPlayback.stopPlayback(client.player);
-                    client.player.sendMessage(Text.literal("Playback terminated early! :("), false);
-                }
-            }
-        });
     }
 }
