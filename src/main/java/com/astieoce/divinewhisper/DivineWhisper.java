@@ -1,5 +1,6 @@
 package com.astieoce.divinewhisper;
 
+import com.astieoce.divinewhisper.entity.EntityInit;
 import com.astieoce.divinewhisper.item.ModItemGroups;
 import com.astieoce.divinewhisper.item.ModItems;
 import net.fabricmc.api.ModInitializer;
@@ -18,5 +19,6 @@ public class DivineWhisper implements ModInitializer {
 
 		ModItemGroups.registerItemGroups();
 		ModItems.registerModItems();
+		EntityInit.init();
 	}
 }

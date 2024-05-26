@@ -1,5 +1,6 @@
 {
   "item.divinewhisper.memory_essence": "Essence of Memory",
+  "item.divinewhisper.memory_essence.tooltip": "A fragment of ancient memories, you hear happy laughter from within.",
 
   "itemgroup.divinewhisper": "Divine Whispers",
   "itemgroup.dw_essence": "DW Essences",

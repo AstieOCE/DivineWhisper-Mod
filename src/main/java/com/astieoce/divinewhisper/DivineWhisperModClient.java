@@ -1,6 +1,8 @@
 package com.astieoce.divinewhisper;
 
-import com.astieoce.divinewhisper.camera.*;
+import com.astieoce.divinewhisper.camera.CameraCommand;
+import com.astieoce.divinewhisper.camera.CameraControl;
+import com.astieoce.divinewhisper.entity.CustomEntityRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -10,6 +12,7 @@ public class DivineWhisperModClient implements ClientModInitializer {
     public void onInitializeClient() {
         // Register key bindings
         ModKeyBindings.registerKeyBindings();
+        CustomEntityRenderer.register();
 
         // Register the Event & Callback
         ClientCommandRegistrationCallback.EVENT.register(CameraCommand::register);
