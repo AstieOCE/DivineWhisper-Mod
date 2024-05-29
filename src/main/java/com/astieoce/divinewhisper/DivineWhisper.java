@@ -15,14 +15,16 @@ import java.util.Random;
 public class DivineWhisper implements ModInitializer {
 	public static final String MOD_ID = "divinewhisper";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-	public static final Logger DEBUG_LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static final MinecraftClient client = MinecraftClient.getInstance();
 
 	@Override
 	public void onInitialize() {
 		LOGGER.info("[DivineWhisper] Initializing.");
+		LOGGER.debug("[DivineWhisper] Mod is loading in Debugging Environment. Hell0!");
+		//TODO: Setup the specific debug logger with debug config shit, OR just use the .debug thing.
 
-		ConfigManager.loadConfig();
+		// Doesn't work currently.
+	//	ConfigManager.loadConfig();
 
 		// Normal Logging for these
 		ModItemGroups.registerItemGroups();

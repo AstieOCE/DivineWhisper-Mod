@@ -24,7 +24,7 @@ public class EntityLevelSyncPacket {
 
         for (ServerPlayerEntity player : ((ServerWorld) entity.getWorld()).getPlayers()) {
             ServerPlayNetworking.send(player, ID, buf);
-            DivineWhisper.DEBUG_LOGGER.info("Sending Sync Packet, Entity ID: {}, Level: {}", entity.getId(), level);
+            DivineWhisper.LOGGER.debug("Sending Sync Packet, Entity ID: {}, Level: {}", entity.getId(), level);
         }
     }
 
@@ -32,12 +32,12 @@ public class EntityLevelSyncPacket {
         ServerPlayNetworking.registerGlobalReceiver(ID, (server, player, handler, buf, responseSender) -> {
             int entityId = buf.readInt();
             int level = buf.readInt();
-            DivineWhisper.DEBUG_LOGGER.info("Received Sync Packet on Server, Entity ID: {}, Level: {}", entityId, level);
+            DivineWhisper.LOGGER.debug("Received Sync Packet on Server, Entity ID: {}, Level: {}", entityId, level);
             server.execute(() -> {
                 Entity entity = player.getWorld().getEntityById(entityId);
                 if (entity instanceof EntityLevelAccessor) {
                     ((EntityLevelAccessor) entity).setEntityLevel(level);
-                    DivineWhisper.DEBUG_LOGGER.info("Applying Sync Packet on Server, Entity ID: {}, Level: {}", entityId, level);
+                    DivineWhisper.LOGGER.debug("Applying Sync Packet on Server, Entity ID: {}, Level: {}", entityId, level);
                 }
             });
         });

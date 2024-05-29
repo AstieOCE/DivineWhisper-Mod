@@ -2,6 +2,7 @@ package com.astieoce.divinewhisper;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import org.apache.http.annotation.Obsolete;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,10 +10,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+//TODO: Get this configmanager working.
+
 public class ConfigManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigManager.class);
-    private static final String CONFIG_FILE_PATH = "config/DivineWhisper_Config.json";
-    private static boolean debugLoggingEnabled = false;
+    private static final String CONFIG_FILE_PATH = "/config/DivineWhisper_Config.json";
+    private static boolean debugLoggingEnabled = true;
 
     public static void loadConfig() {
         try (FileReader reader = new FileReader(CONFIG_FILE_PATH)) {

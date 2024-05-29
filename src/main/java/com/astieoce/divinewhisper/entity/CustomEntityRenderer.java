@@ -47,7 +47,7 @@ public class CustomEntityRenderer<T extends Entity> extends EntityRenderer<T> {
 
         if (entity instanceof EntityLevelAccessor) {
             int level = ((EntityLevelAccessor) entity).getEntityLevel();
-            DivineWhisper.DEBUG_LOGGER.info("Rendering entity: {} with level: {}", entity, level);
+            DivineWhisper.LOGGER.debug("Rendering entity: {} with level: {}", entity, level);
 
             String entityTypeName = ENTITY_NAMES.getOrDefault(entity.getType(), "Unknown");
             Text name = Text.literal(entityTypeName);

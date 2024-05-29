@@ -15,6 +15,8 @@ import net.minecraft.entity.mob.MobEntity;
 
 import java.util.Objects;
 
+import static com.astieoce.divinewhisper.DivineWhisper.LOGGER;
+
 public class DivineWhisperModClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
@@ -32,7 +34,8 @@ public class DivineWhisperModClient implements ClientModInitializer {
 
 
 
-        // Register network handler for client-side
+        //TODO: This is possibly Obsolete.
+        //Register network handler for client-side
 //        ClientPlayNetworking.registerGlobalReceiver(EntityLevelSyncPacket.ID, (client, handler, buf, responseSender) -> {
 //            int entityId = buf.readInt();
 //            int level = buf.readInt();
