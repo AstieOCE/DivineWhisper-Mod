@@ -44,32 +44,32 @@ public class CustomEntityRenderer<T extends Entity> extends EntityRenderer<T> {
         // Render the default entity
         this.defaultRenderer.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
 
-        if (entity instanceof EntityLevelAccessor) {
-            EntityLevelAccessor accessor = (EntityLevelAccessor) entity;
-            int level = accessor.getEntityLevel();
-            LOGGER.info("Rendering entity: {} with level: {}", entity, level);
+        // Access the NBT data directly to get the level
+        int level = ((EntityLevelAccessor) entity).getEntityLevel();
+        LOGGER.info("Rendering entity: {} with level: {}", entity, level);
 
-            String entityTypeName = ENTITY_NAMES.getOrDefault(entity.getType(), "Unknown");
-            Text name = Text.literal(entityTypeName);
-            String levelText = "Level: " + level;
+        String entityTypeName = ENTITY_NAMES.getOrDefault(entity.getType(), "Unknown");
+        Text name = Text.literal(entityTypeName);
+        String levelText = "Level: " + level;
 
-            matrices.push();
-            matrices.translate(0.0D, entity.getHeight() + 0.5D, 0.0D);
-            matrices.multiply(this.dispatcher.getRotation());
-            matrices.scale(-0.025F, -0.025F, 0.025F);
-            Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+        matrices.push();
+        matrices.translate(0.0D, entity.getHeight() + 0.5D, 0.0D);
+        matrices.multiply(this.dispatcher.getRotation());
+        matrices.scale(-0.025F, -0.025F, 0.025F);
+        Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 
-            float nameWidth = textRenderer.getWidth(name);
-            float levelTextWidth = textRenderer.getWidth(levelText);
+        float nameWidth = textRenderer.getWidth(name);
+        float levelTextWidth = textRenderer.getWidth(levelText);
 
-            // Render name
-            textRenderer.draw(name.asOrderedText(), -nameWidth / 2.0F, 0, 0xFFFFFF, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+        // Render name
+        textRenderer.draw(name.asOrderedText(), -nameWidth / 2.0F, 0, 0xFFFFFF, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
 
-            // Render level
-            textRenderer.draw(levelText, -levelTextWidth / 2.0F, 10, 0xFFFFFF, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+        // Render level
+        textRenderer.draw(levelText, -levelTextWidth / 2.0F, 10, 0xFFFFFF, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
 
-            matrices.pop();
-        }
+        matrices.pop();
+
+        LOGGER.info("Rendering entity: {} with level: {}", entity, level);
     }
 
     @Nullable
@@ -81,7 +81,7 @@ public class CustomEntityRenderer<T extends Entity> extends EntityRenderer<T> {
     public static void register() {
         EntityRendererRegistry.register(EntityType.ZOMBIE, context -> new CustomEntityRenderer<>(context, new ZombieEntityRenderer(context)));
         EntityRendererRegistry.register(EntityType.SKELETON, context -> new CustomEntityRenderer<>(context, new SkeletonEntityRenderer(context)));
-        // I'll The Register other entity types as needed or do somethign more big brain.
+        // Register other entity types as needed
     }
 
     public static void addEntityName(EntityType<?> entityType, String name) {

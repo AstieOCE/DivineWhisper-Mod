@@ -25,7 +25,12 @@ public abstract class MobEntityMixin implements EntityLevelAccessor {
 
     @Inject(method = "initialize", at = @At("RETURN"))
     private void onInitialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, EntityData entityData, NbtCompound entityNbt, CallbackInfoReturnable<EntityData> cir) {
-        DivineWhisper.applyEntityLevel((MobEntity) (Object) this);
+        if (entityLevel == 0) {
+            entityLevel = DivineWhisper.generateRandomLevel();
+            LOGGER.info("Initializing entity with random level: {}", entityLevel);
+        } else {
+            LOGGER.info("Entity already has a level: {}", entityLevel);
+        }
     }
 
     @Inject(method = "writeCustomDataToNbt", at = @At("RETURN"))
@@ -39,13 +44,10 @@ public abstract class MobEntityMixin implements EntityLevelAccessor {
         if (nbt.contains("EntityLevel", 3)) { // 3 is the type ID for int
             this.entityLevel = nbt.getInt("EntityLevel");
             LOGGER.info("Reading EntityLevel from NBT: {}", this.entityLevel);
-        }
-        // Add fallback to update level if it is still 0 after reading NBT
-        if (this.entityLevel == 0) {
-            LOGGER.info("Entity {} still has level 0 after reading NBT. Updating with a random level.", (Object)this);
-            int randomLevel = DivineWhisper.generateRandomLevel();
-            this.setEntityLevel(randomLevel);
-            LOGGER.info("Entity {} new fallback level: {}", (Object)this, randomLevel);
+        } else {
+            LOGGER.info("Entity {} does not have EntityLevel in NBT. Assigning a random level.", this);
+            this.entityLevel = DivineWhisper.generateRandomLevel();
+            LOGGER.info("Entity {} new fallback level: {}", this, this.entityLevel);
         }
     }
 
@@ -56,6 +58,7 @@ public abstract class MobEntityMixin implements EntityLevelAccessor {
 
     @Override
     public void setEntityLevel(int level) {
+        LOGGER.info("Setting EntityLevel: {}", level);
         this.entityLevel = level;
     }
 }
