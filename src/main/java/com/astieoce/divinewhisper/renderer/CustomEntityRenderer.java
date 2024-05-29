@@ -1,53 +1,93 @@
-package com.astieoce.divinewhisper.renderer;
+package com.astieoce.divinewhisper.entity;
 
-import com.astieoce.divinewhisper.entity.EntityLevelAccessor;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.SkeletonEntityRenderer;
+import net.minecraft.client.render.entity.ZombieEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Environment(EnvType.CLIENT)
-public class CustomEntityRenderer {
+import java.util.HashMap;
+import java.util.Map;
 
-    public static void render(Entity entity, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        if (entity instanceof EntityLevelAccessor && entity instanceof LivingEntity) {
+public class CustomEntityRenderer<T extends Entity> extends EntityRenderer<T> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomEntityRenderer.class);
+    private final TextRenderer textRenderer;
+    private final EntityRenderer<T> defaultRenderer;
+    private static final Map<EntityType<?>, String> ENTITY_NAMES = new HashMap<>();
+
+    static {
+        ENTITY_NAMES.put(EntityType.ZOMBIE, "Zombie");
+        ENTITY_NAMES.put(EntityType.SKELETON, "Skeleton");
+        // Add other entities as needed
+    }
+
+    public CustomEntityRenderer(EntityRendererFactory.Context context, EntityRenderer<T> defaultRenderer) {
+        super(context);
+        this.textRenderer = context.getTextRenderer();
+        this.defaultRenderer = defaultRenderer;
+    }
+
+    @Override
+    public void render(T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        // Render the default entity
+        this.defaultRenderer.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
+
+        if (entity instanceof EntityLevelAccessor) {
             EntityLevelAccessor accessor = (EntityLevelAccessor) entity;
             int level = accessor.getEntityLevel();
-            if (level > 0) {
-                String levelText = "Level: " + level;
-                renderNameAndLevel((LivingEntity) entity, entity.getDisplayName(), levelText, matrices, vertexConsumers, light);
-            }
+
+            String entityTypeName = ENTITY_NAMES.getOrDefault(entity.getType(), "Unknown");
+            Text name = Text.literal(entityTypeName);
+            String levelText = "Level: " + level;
+
+            matrices.push();
+            matrices.translate(0.0D, entity.getHeight() + 0.5D, 0.0D);
+            matrices.multiply(this.dispatcher.getRotation());
+            matrices.scale(-0.025F, -0.025F, 0.025F);
+            Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+
+            float nameWidth = textRenderer.getWidth(name);
+            float levelTextWidth = textRenderer.getWidth(levelText);
+
+            // Render name
+            textRenderer.draw(name.asOrderedText(), -nameWidth / 2.0F, 0, 0xFFFFFF, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+
+            // Render level
+            textRenderer.draw(levelText, -levelTextWidth / 2.0F, 10, 0xFFFFFF, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+
+            matrices.pop();
         }
     }
 
-    private static void renderNameAndLevel(LivingEntity entity, Text name, String levelText, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-        float yOffset = entity.getHeight() + 0.5F;
+    @Nullable
+    @Override
+    public Identifier getTexture(T entity) {
+        return this.defaultRenderer.getTexture(entity);
+    }
 
-        matrices.push();
-        Vec3d cameraPos = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
-        matrices.translate(entity.getX() - cameraPos.x, yOffset, entity.getZ() - cameraPos.z);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-MinecraftClient.getInstance().gameRenderer.getCamera().getYaw()));
-        matrices.scale(-0.025F, -0.025F, 0.025F);
+    public static void register() {
+        EntityRendererRegistry.register(EntityType.ZOMBIE, context -> new CustomEntityRenderer<>(context, new ZombieEntityRenderer(context)));
+        EntityRendererRegistry.register(EntityType.SKELETON, context -> new CustomEntityRenderer<>(context, new SkeletonEntityRenderer(context)));
+        // Register other entity types as needed
+    }
 
-        // Render the name
-        if (name != null && !name.getString().isEmpty()) {
-            matrices.push();
-            textRenderer.draw(name.asOrderedText(), -textRenderer.getWidth(name) / 2.0F, 0, 0xFFFFFF, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
-            matrices.pop();
-            matrices.translate(0, textRenderer.fontHeight + 2, 0); // Adjust position to be below the name
-        }
+    public static void addEntityName(EntityType<?> entityType, String name) {
+        ENTITY_NAMES.put(entityType, name);
+    }
 
-        // Render the level below the name
-        textRenderer.draw(levelText, -textRenderer.getWidth(levelText) / 2.0F, 0, 0xFFFFFF, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
-
-        matrices.pop();
+    public static void removeEntityName(EntityType<?> entityType) {
+        ENTITY_NAMES.remove(entityType);
     }
 }

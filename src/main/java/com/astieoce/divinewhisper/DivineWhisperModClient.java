@@ -2,6 +2,7 @@ package com.astieoce.divinewhisper;
 
 import com.astieoce.divinewhisper.camera.CameraCommand;
 import com.astieoce.divinewhisper.camera.CameraControl;
+import com.astieoce.divinewhisper.entity.CustomEntityRenderer;
 import com.astieoce.divinewhisper.renderer.CustomEntityRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -23,15 +24,7 @@ public class DivineWhisperModClient implements ClientModInitializer {
         // Register frame recording
         ClientTickEvents.END_CLIENT_TICK.register(client -> CameraControl.recordFrame());
 
-        // Register entity render callback
-        WorldRenderEvents.AFTER_ENTITIES.register(this::onRenderWorld);
-    }
-
-    private void onRenderWorld(WorldRenderContext context) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        client.world.getEntities().forEach(entity -> {
-            int light = client.getEntityRenderDispatcher().getRenderer(entity).getLight(entity, context.tickDelta());
-            CustomEntityRenderer.render(entity, context.matrixStack(), context.consumers(), light);
-        });
+        // Register Custom Entity Renderer... It's shit but it works lmao ;_;
+        CustomEntityRenderer.register();
     }
 }
