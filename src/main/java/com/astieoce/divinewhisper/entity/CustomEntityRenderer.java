@@ -12,6 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.RotationAxis;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.slf4j.Logger;
@@ -46,6 +47,7 @@ public class CustomEntityRenderer<T extends Entity> extends EntityRenderer<T> {
         if (entity instanceof EntityLevelAccessor) {
             EntityLevelAccessor accessor = (EntityLevelAccessor) entity;
             int level = accessor.getEntityLevel();
+            LOGGER.info("Rendering entity: {} with level: {}", entity, level);
 
             String entityTypeName = ENTITY_NAMES.getOrDefault(entity.getType(), "Unknown");
             Text name = Text.literal(entityTypeName);
@@ -79,7 +81,7 @@ public class CustomEntityRenderer<T extends Entity> extends EntityRenderer<T> {
     public static void register() {
         EntityRendererRegistry.register(EntityType.ZOMBIE, context -> new CustomEntityRenderer<>(context, new ZombieEntityRenderer(context)));
         EntityRendererRegistry.register(EntityType.SKELETON, context -> new CustomEntityRenderer<>(context, new SkeletonEntityRenderer(context)));
-        // Register other entity types as needed
+        // I'll The Register other entity types as needed or do somethign more big brain.
     }
 
     public static void addEntityName(EntityType<?> entityType, String name) {

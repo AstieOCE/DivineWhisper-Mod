@@ -28,6 +28,7 @@ public class DivineWhisper implements ModInitializer {
 		// Register the tick event to call the CameraPlayback.tick method
 		ClientTickEvents.END_CLIENT_TICK.register(client -> CameraPlayback.tick());
 	}
+
 	public static void applyEntityLevel(MobEntity entity) {
 		EntityLevelAccessor accessor = (EntityLevelAccessor) entity;
 		int level = accessor.getEntityLevel();
@@ -41,10 +42,10 @@ public class DivineWhisper implements ModInitializer {
 		}
 	}
 
-	private static int generateRandomLevel() {
+	public static int generateRandomLevel() {
 		Random random = new Random();
 		int minLevel = 1; // Minimum level
 		int maxLevel = 80; // Maximum level
-		return random.nextInt((maxLevel - minLevel)) + minLevel;
+		return random.nextInt((maxLevel - minLevel + 1)) + minLevel;
 	}
 }

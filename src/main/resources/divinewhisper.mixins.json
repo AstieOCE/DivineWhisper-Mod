@@ -4,8 +4,7 @@
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
 		"ExampleMixin",
-		"MobEntityMixin",
-		"EntityRenderDispatcherMixin"
+		"MobEntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
