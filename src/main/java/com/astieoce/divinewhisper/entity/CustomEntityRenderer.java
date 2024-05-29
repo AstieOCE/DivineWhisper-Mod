@@ -1,5 +1,6 @@
 package com.astieoce.divinewhisper.entity;
 
+import com.astieoce.divinewhisper.DivineWhisper;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -10,9 +11,9 @@ import net.minecraft.client.render.entity.ZombieEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.slf4j.Logger;
@@ -44,32 +45,31 @@ public class CustomEntityRenderer<T extends Entity> extends EntityRenderer<T> {
         // Render the default entity
         this.defaultRenderer.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
 
-        // Access the NBT data directly to get the level
-        int level = ((EntityLevelAccessor) entity).getEntityLevel();
-        LOGGER.info("Rendering entity: {} with level: {}", entity, level);
+        if (entity instanceof EntityLevelAccessor) {
+            int level = ((EntityLevelAccessor) entity).getEntityLevel();
+            DivineWhisper.DEBUG_LOGGER.info("Rendering entity: {} with level: {}", entity, level);
 
-        String entityTypeName = ENTITY_NAMES.getOrDefault(entity.getType(), "Unknown");
-        Text name = Text.literal(entityTypeName);
-        String levelText = "Level: " + level;
+            String entityTypeName = ENTITY_NAMES.getOrDefault(entity.getType(), "Unknown");
+            Text name = Text.literal(entityTypeName);
+            String levelText = "Level: " + level;
 
-        matrices.push();
-        matrices.translate(0.0D, entity.getHeight() + 0.5D, 0.0D);
-        matrices.multiply(this.dispatcher.getRotation());
-        matrices.scale(-0.025F, -0.025F, 0.025F);
-        Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+            matrices.push();
+            matrices.translate(0.0D, entity.getHeight() + 0.5D, 0.0D);
+            matrices.multiply(this.dispatcher.getRotation());
+            matrices.scale(-0.025F, -0.025F, 0.025F);
+            Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 
-        float nameWidth = textRenderer.getWidth(name);
-        float levelTextWidth = textRenderer.getWidth(levelText);
+            float nameWidth = textRenderer.getWidth(name);
+            float levelTextWidth = textRenderer.getWidth(levelText);
 
-        // Render name
-        textRenderer.draw(name.asOrderedText(), -nameWidth / 2.0F, 0, 0xFFFFFF, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+            // Render name
+            textRenderer.draw(name.asOrderedText(), -nameWidth / 2.0F, 0, 0xFFFFFF, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
 
-        // Render level
-        textRenderer.draw(levelText, -levelTextWidth / 2.0F, 10, 0xFFFFFF, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+            // Render level
+            textRenderer.draw(levelText, -levelTextWidth / 2.0F, 10, 0xFFFFFF, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
 
-        matrices.pop();
-
-        LOGGER.info("Rendering entity: {} with level: {}", entity, level);
+            matrices.pop();
+        }
     }
 
     @Nullable

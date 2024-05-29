@@ -21,6 +21,9 @@
 		"client": [
 			"com.astieoce.divinewhisper.DivineWhisperModClient"
 		],
+		"server": [
+			"com.astieoce.divinewhisper.DivineWhisperModServer"
+		],
 		"fabric-datagen": [
 			"com.astieoce.divinewhisper.DivineWhisperDataGenerator"
 		]
