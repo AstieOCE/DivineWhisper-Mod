@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class ConfigManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigManager.class);
-    private static final String CONFIG_FILE_PATH = "/config/DivineWhisper_Config.json";
+    private static final String CONFIG_FILE_PATH = "/config/divinewhisper_config.json";
     private static boolean debugLoggingEnabled = true;
 
     public static void loadConfig() {

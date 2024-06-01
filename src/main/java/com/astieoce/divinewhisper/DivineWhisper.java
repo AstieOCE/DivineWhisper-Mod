@@ -21,6 +21,7 @@ public class DivineWhisper implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("[DivineWhisper] Initializing.");
 		LOGGER.debug("[DivineWhisper] Mod is loading in Debugging Environment. Hell0!");
+		//TODO: English language file! I haven't done the normal items yet! oosp!
 		//TODO: Setup the specific debug logger with debug config shit, OR just use the .debug thing.
 
 		// Doesn't work currently.
