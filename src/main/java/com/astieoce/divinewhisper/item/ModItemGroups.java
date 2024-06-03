@@ -42,6 +42,6 @@ public class ModItemGroups {
     }
 
     public static void registerItemGroups() {
-        DivineWhisper.LOGGER.info("Registering " + ITEM_GROUPS.size() + " Mod Item Groups for " + DivineWhisper.MOD_ID);
+        DivineWhisper.LOGGER.info("Registering {} Mod Item Groups for " + DivineWhisper.MOD_ID, ITEM_GROUPS.size());
     }
 }

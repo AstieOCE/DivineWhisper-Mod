@@ -1,15 +1,18 @@
 package com.astieoce.divinewhisper;
 
+import com.astieoce.divinewhisper.block.ModBlocks;
 import com.astieoce.divinewhisper.camera.CameraCommand;
 import com.astieoce.divinewhisper.camera.CameraControl;
 import com.astieoce.divinewhisper.entity.CustomEntityRenderer;
 import com.astieoce.divinewhisper.entity.EntityLevelAccessor;
 import com.astieoce.divinewhisper.network.EntityLevelSyncPacket;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 
@@ -32,6 +35,7 @@ public class DivineWhisperModClient implements ClientModInitializer {
         // Register Custom Entity Renderer
         CustomEntityRenderer.register();
 
+        setRenderLayers();
 
 
         //TODO: This is possibly Obsolete.
@@ -48,5 +52,8 @@ public class DivineWhisperModClient implements ClientModInitializer {
 //                }
 //            });
 //        });
+    }
+    private void setRenderLayers() {
+        ModBlocks.GLOWING_GLASS_PANES.values().forEach(block -> BlockRenderLayerMap.INSTANCE.putBlock(block, RenderLayer.getTranslucent()));
     }
 }
