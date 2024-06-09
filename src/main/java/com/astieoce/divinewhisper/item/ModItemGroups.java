@@ -1,6 +1,8 @@
 package com.astieoce.divinewhisper.item;
 
 import com.astieoce.divinewhisper.DivineWhisper;
+import com.astieoce.divinewhisper.registry.ItemRegistry;
+
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -20,9 +22,9 @@ public class ModItemGroups {
     public static final ItemGroup DIVINEWHISPER_GROUP = registerItemGroup("divinewhisper",
             FabricItemGroup.builder()
                     .displayName(Text.translatable("itemgroup.divinewhisper"))
-                    .icon(() -> new ItemStack(ModItems.MEMORY_ESSENCE))
+                    .icon(() -> new ItemStack(ItemRegistry.MEMORY_ESSENCE))
                     .entries((displayContext, entries) -> {
-                        for (Item item : ModItems.getModItems()) {
+                        for (Item item : ItemRegistry.getModItems()) {
                             entries.add(new ItemStack(item));
                         }
                     }).build());

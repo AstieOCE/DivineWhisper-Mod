@@ -1,6 +1,7 @@
 package com.astieoce.divinewhisper;
 
 import com.astieoce.divinewhisper.network.EntityLevelSyncPacket;
+import com.astieoce.divinewhisper.registry.ItemRegistry;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

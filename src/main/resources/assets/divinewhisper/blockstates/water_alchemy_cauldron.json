@@ -1,0 +1,8 @@
+{
+  "variants":
+  {
+    "": {
+      "model":"divinewhisper:block/water_alchemy_cauldron_full"
+    }
+  }
+}

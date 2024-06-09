@@ -1,14 +1,14 @@
 package com.astieoce.divinewhisper;
 
-import com.astieoce.divinewhisper.block.ModBlocks;
+import com.astieoce.divinewhisper.block.BlockRegistry;
 import com.astieoce.divinewhisper.camera.CameraPlayback;
-import com.astieoce.divinewhisper.entity.CustomEntityRenderer;
 import com.astieoce.divinewhisper.item.ModItemGroups;
-import com.astieoce.divinewhisper.item.ModItems;
+import com.astieoce.divinewhisper.registry.EntityRegistry;
+import com.astieoce.divinewhisper.registry.ItemRegistry;
+import com.astieoce.divinewhisper.registry.ModBlockEntities;
+import com.astieoce.divinewhisper.registry.ModScreenHandlers;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.client.MinecraftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,11 +30,15 @@ public class DivineWhisper implements ModInitializer {
 		// Doesn't work currently.
 	//	ConfigManager.loadConfig();
 
-		// Normal Logging for these
-		ModItemGroups.registerItemGroups();
-		ModItems.registerModItems();
+		// Working.
+		ItemRegistry.registerModItems();
+		ModBlockEntities.registerBlockEntities();
+		BlockRegistry.registerBlocks();
+		EntityRegistry.registerEntities();
+		ModScreenHandlers.registerAllScreenHandlers();
 
-		ModBlocks.registerBlocks();
+		//TODO: Remove ModItemGroups, move to registry package, rename like ItemRegistry.java class.
+		ModItemGroups.registerItemGroups();
 
 
 		// Register the tick event to call the CameraPlayback.tick method
