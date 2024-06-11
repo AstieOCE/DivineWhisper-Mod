@@ -29,7 +29,9 @@ public class DivineWhisperModClient implements ClientModInitializer {
         // Register SINGULAR Screenhandler.
         // TODO: Make this not just register ONE at a time lmao.
         ScreenRegistry.register(ModScreenHandlers.ALCHEMY_STATION_SCREEN_HANDLER, AlchemyStationScreen::new);
-        EntityRendererRegistry.register(EntityRegistry.BEELZEBUBS, BeelzebubsEntityRenderer::new);
+
+        
+        //EntityRendererRegistry.register(EntityRegistry.BEELZEBUBS, BeelzebubsEntityRenderer::new);
         // Register the Event & Callback
         ClientCommandRegistrationCallback.EVENT.register(CameraCommand::register);
 
